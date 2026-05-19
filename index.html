@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Knowledge Card Gallery Reader</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: rgba(255, 255, 255, 0.86);
+      --text: #172033;
+      --muted: #667085;
+      --line: rgba(226, 232, 240, 0.9);
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-soft: #eaf1ff;
+      --purple: #7c3aed;
+      --shadow: 0 24px 80px rgba(15, 23, 42, 0.10);
+      --radius: 28px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% 10%, rgba(37, 99, 235, 0.16), transparent 28%),
+        radial-gradient(circle at 86% 18%, rgba(124, 58, 237, 0.16), transparent 30%),
+        linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%);
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 56px 0 72px;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 34px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 13px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--muted);
+      font-size: 13px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .badge::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 5px rgba(34, 197, 94, 0.12);
+    }
+
+    h1 {
+      margin: 18px auto 14px;
+      max-width: 860px;
+      font-size: clamp(34px, 6vw, 68px);
+      line-height: 1.05;
+      letter-spacing: -0.065em;
+    }
+
+    .hero p {
+      max-width: 720px;
+      margin: 0 auto;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.8;
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px;
+      margin-top: 36px;
+    }
+
+    .preview-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 560px;
+      display: grid;
+      grid-template-rows: 260px 1fr;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--card);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    }
+
+    .preview-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(37, 99, 235, 0.28);
+      box-shadow: 0 30px 90px rgba(15, 23, 42, 0.14);
+    }
+
+    .mockup {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+    }
+
+    .mockup.reader {
+      background: linear-gradient(135deg, #0f766e, #2563eb);
+    }
+
+    .mockup::before,
+    .mockup::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.16);
+    }
+
+    .mockup::before {
+      width: 180px;
+      height: 180px;
+      right: -40px;
+      top: -45px;
+    }
+
+    .mockup::after {
+      width: 220px;
+      height: 220px;
+      left: -70px;
+      bottom: -90px;
+    }
+
+    .gallery-ui,
+    .reader-ui {
+      position: absolute;
+      inset: 30px;
+      z-index: 2;
+      display: grid;
+      gap: 12px;
+    }
+
+    .gallery-ui {
+      grid-template-columns: repeat(3, 1fr);
+      align-content: center;
+    }
+
+    .mini-card {
+      min-height: 86px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 14px 34px rgba(15, 23, 42, 0.12);
+      padding: 12px;
+      display: grid;
+      align-content: end;
+      gap: 7px;
+    }
+
+    .mini-card span {
+      display: block;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(100, 116, 139, 0.18);
+    }
+
+    .mini-card span:first-child {
+      width: 70%;
+      background: rgba(37, 99, 235, 0.24);
+    }
+
+    .reader-ui {
+      grid-template-columns: 36% 1fr;
+      align-items: stretch;
+    }
+
+    .reader-side,
+    .reader-main {
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 14px 34px rgba(15, 23, 42, 0.12);
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+    }
+
+    .line {
+      display: block;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(100, 116, 139, 0.18);
+    }
+
+    .line.primary {
+      background: rgba(37, 99, 235, 0.24);
+    }
+
+    .line.short { width: 52%; }
+    .line.mid { width: 74%; }
+    .line.long { width: 92%; }
+
+    .content {
+      padding: 26px;
+      display: grid;
+      align-content: space-between;
+      gap: 24px;
+    }
+
+    .content h2 {
+      margin: 0 0 10px;
+      font-size: 26px;
+      line-height: 1.2;
+      letter-spacing: -0.035em;
+    }
+
+    .content p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.75;
+      font-size: 15px;
+    }
+
+    .features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 46px;
+      padding: 0 17px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 14px;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    .btn.primary {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 12px 26px rgba(37, 99, 235, 0.22);
+    }
+
+    .btn.primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 16px 34px rgba(37, 99, 235, 0.28);
+    }
+
+    .btn.ghost {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+    }
+
+    .btn.ghost:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 26px rgba(15, 23, 42, 0.08);
+    }
+
+    .footer-note {
+      margin-top: 26px;
+      padding: 18px 20px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    code {
+      padding: 2px 6px;
+      border-radius: 8px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.92em;
+    }
+
+    @media (max-width: 860px) {
+      .page {
+        width: min(100% - 24px, 680px);
+        padding: 34px 0 46px;
+      }
+
+      .preview-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .preview-card {
+        min-height: auto;
+        grid-template-rows: 220px auto;
+      }
+
+      .gallery-ui {
+        inset: 22px;
+      }
+
+      .reader-ui {
+        inset: 22px;
+      }
+
+      .content {
+        padding: 22px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      h1 {
+        font-size: 36px;
+      }
+
+      .hero p {
+        font-size: 15px;
+      }
+
+      .gallery-ui {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .preview-card {
+        grid-template-rows: 200px auto;
+        border-radius: 22px;
+      }
+
+      .reader-ui {
+        grid-template-columns: 1fr;
+      }
+
+      .reader-side {
+        display: none;
+      }
+
+      .actions {
+        display: grid;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="badge">GitHub Pages Preview</div>
+      <h1>Knowledge Card Gallery Reader</h1>
+      <p>这里是知识卡片项目的预览入口。你可以选择图库模式快速浏览，也可以选择阅读器模式按主题连续阅读。</p>
+    </section>
+
+    <section class="preview-grid" aria-label="预览入口">
+      <article class="preview-card">
+        <div class="mockup" aria-hidden="true">
+          <div class="gallery-ui">
+            <div class="mini-card"><span></span><span></span></div>
+            <div class="mini-card"><span></span><span></span></div>
+            <div class="mini-card"><span></span><span></span></div>
+            <div class="mini-card"><span></span><span></span></div>
+            <div class="mini-card"><span></span><span></span></div>
+            <div class="mini-card"><span></span><span></span></div>
+          </div>
+        </div>
+        <div class="content">
+          <div>
+            <h2>知识卡片图库模式</h2>
+            <p>适合快速浏览多个知识主题。每个主题卡片内部使用 Swiper 轮播，点击图片可以进入大图预览。</p>
+            <div class="features">
+              <span class="tag">主题网格</span>
+              <span class="tag">Swiper 轮播</span>
+              <span class="tag">大图预览</span>
+              <span class="tag">分类 / 标签筛选</span>
+            </div>
+          </div>
+          <div class="actions">
+            <a class="btn primary" href="./knowledge-card-gallery/">打开图库模式</a>
+            <a class="btn ghost" href="./knowledge-card-gallery/README.md">查看说明</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="preview-card">
+        <div class="mockup reader" aria-hidden="true">
+          <div class="reader-ui">
+            <div class="reader-side">
+              <span class="line primary long"></span>
+              <span class="line mid"></span>
+              <span class="line long"></span>
+              <span class="line short"></span>
+              <span class="line mid"></span>
+            </div>
+            <div class="reader-main">
+              <span class="line primary mid"></span>
+              <span class="line long"></span>
+              <span class="line long"></span>
+              <span class="line mid"></span>
+              <span class="line short"></span>
+            </div>
+          </div>
+        </div>
+        <div class="content">
+          <div>
+            <h2>知识卡片阅读器 Pro</h2>
+            <p>适合主题很多、需要系统阅读的知识库。支持目录搜索、分类折叠、收藏主题和最近查看。</p>
+            <div class="features">
+              <span class="tag">折叠目录</span>
+              <span class="tag">主题搜索</span>
+              <span class="tag">收藏主题</span>
+              <span class="tag">手机端抽屉</span>
+            </div>
+          </div>
+          <div class="actions">
+            <a class="btn primary" href="./knowledge-card-reader-pro/">打开阅读器模式</a>
+            <a class="btn ghost" href="./knowledge-card-reader-pro/README.md">查看说明</a>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <p class="footer-note">
+      GitHub Pages 开启后，访问仓库根地址会先进入这个预览页。两个效果分别位于
+      <code>/knowledge-card-gallery/</code> 和 <code>/knowledge-card-reader-pro/</code>。
+    </p>
+  </main>
+</body>
+</html>

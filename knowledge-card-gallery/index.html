@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>知识卡片图库</title>
+
+  <!-- Swiper 固定版本 CDN -->
+  <link rel="stylesheet" href="css/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="page">
+    <aside class="sidebar">
+      <section class="side-section">
+        <h2 class="side-title">分类</h2>
+        <div id="categoryList" class="filter-list"></div>
+      </section>
+
+      <section class="side-section">
+        <h2 class="side-title">标签</h2>
+        <div id="tagCloud" class="tag-cloud"></div>
+      </section>
+    </aside>
+
+    <main class="main">
+      <div class="main-head">
+        <div>
+          <h1 id="pageTitle">全部知识卡片</h1>
+          <p id="resultText">正在载入知识卡片...</p>
+        </div>
+      </div>
+
+      <div id="mobileFilters" class="mobile-filters"></div>
+      <section id="grid" class="grid"></section>
+
+      <div id="empty" class="empty">
+        <div>
+          <h3>没有找到相关知识卡片</h3>
+          <p>可以切换分类或标签查看。</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="lightbox" class="lightbox" role="dialog" aria-modal="true">
+    <div class="lightbox-top">
+      <div class="lightbox-title">
+        <h2 id="lightboxTitle"></h2>
+        <p id="lightboxMeta"></p>
+      </div>
+      <button class="close-btn" id="closeLightbox" aria-label="关闭">
+        <span class="sr-only">关闭</span>
+      </button>
+    </div>
+
+    <div class="swiper lightbox-swiper" id="lightboxSwiper">
+      <div class="swiper-wrapper" id="lightboxWrapper"></div>
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-button-next"></div>
+    </div>
+
+    <div class="lightbox-bottom">
+      <div class="swiper-pagination lightbox-pagination"></div>
+    </div>
+  </div>
+
+  <script src="js/swiper-bundle.min.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

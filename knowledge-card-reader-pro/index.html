@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>知识卡片阅读器 Pro</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="mobile-topbar">
+    <button class="menu-btn" id="openDrawer" aria-label="打开目录"><span></span></button>
+    <div class="mobile-title">
+      <strong id="mobileCurrentTitle">知识卡片阅读器</strong>
+      <span id="mobileCurrentMeta">目录 / 阅读模式</span>
+    </div>
+    <button class="icon-btn" id="mobileFavBtn" aria-label="收藏当前主题">★</button>
+  </header>
+
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+
+  <div class="page">
+    <aside class="sidebar-shell" id="sidebarShell">
+      <nav class="sidebar" aria-label="知识卡片目录">
+        <div class="sidebar-head">
+          <h1>知识卡片阅读器</h1>
+          <p>适合主题数量较多时，按分类折叠、搜索和收藏管理。</p>
+        </div>
+
+        <div class="search-wrap">
+          <input id="catalogSearch" type="search" placeholder="搜索主题 / 标签 / 分类" />
+        </div>
+
+        <section class="quick-section">
+          <div class="quick-row">
+            <h2 class="section-title">收藏主题</h2>
+          </div>
+          <div id="favoriteList" class="quick-list empty"></div>
+
+          <div class="quick-row">
+            <h2 class="section-title">最近查看</h2>
+            <button class="clear-btn" id="clearRecent">清空</button>
+          </div>
+          <div id="recentList" class="quick-list empty"></div>
+        </section>
+
+        <section class="catalog">
+          <div class="quick-row" style="margin-bottom: 10px;">
+            <h2 class="section-title">分类目录</h2>
+          </div>
+          <div class="catalog-scroll" id="catalogTree"></div>
+        </section>
+      </nav>
+    </aside>
+
+    <main class="reader">
+      <section class="reader-head">
+        <div class="breadcrumb" id="breadcrumb">全部 / 当前主题</div>
+        <div class="reader-title-row">
+          <div>
+            <h2 id="readerTitle"></h2>
+            <p id="readerDesc" class="reader-desc"></p>
+          </div>
+          <button class="reader-fav" id="readerFavBtn" aria-label="收藏当前主题">★</button>
+        </div>
+        <div class="meta-line" id="readerMeta"></div>
+      </section>
+
+      <section class="card-stack" id="cardStack"></section>
+
+      <nav class="reader-nav">
+        <button class="nav-card prev" id="prevTopicBtn">
+          <small>上一篇主题</small>
+          <strong id="prevTopicText"></strong>
+        </button>
+        <button class="nav-card next" id="nextTopicBtn">
+          <small>下一篇主题</small>
+          <strong id="nextTopicText"></strong>
+        </button>
+      </nav>
+    </main>
+  </div>
+
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true">
+    <div class="lightbox-top">
+      <div class="lightbox-title">
+        <strong id="lightboxTitle"></strong>
+        <span id="lightboxMeta"></span>
+      </div>
+      <button class="close-btn" id="closeLightbox" aria-label="关闭">
+        <span class="sr-only">关闭</span>
+      </button>
+    </div>
+
+    <div class="lightbox-stage">
+      <button class="lightbox-arrow prev" id="prevImage" aria-label="上一张"></button>
+      <img id="lightboxImg" alt="知识卡片大图" />
+      <button class="lightbox-arrow next" id="nextImage" aria-label="下一张"></button>
+    </div>
+
+    <div class="lightbox-bottom">点击图片可放大，左右方向键切换，ESC 关闭</div>
+  </div>
+
+  
+  <script src="js/main.js"></script>
+</body>
+</html>
